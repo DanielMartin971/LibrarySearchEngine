@@ -37,12 +37,12 @@ const resolvers = {
             const token = signToken(user);
             return { token, user };
         },
-        saveBook: async (parent, { bookData }, context) => {
+        saveBook: async (parent, { input }, context) => {
             if(context.user) {
                 const updatedUser = await User
-                .findByIdAndUpdate(
+                .findOneAndUpdate(
                     { _id: context.user._id },
-                    { $addToSet: { savedBooks: bookData } },
+                    { $addToSet: { savedBooks: input } },
                     { new: true }
                 )
                 .populate('books');
@@ -56,7 +56,7 @@ const resolvers = {
                 const updatedUser = await User
                 .findByIdAndUpdate(
                     { _id: context.user._id },
-                    { $pull: { savedBooks: { bookId } } },
+                    { $pull: { savedBooks: { bookId: bookId } } },
                     { new: true }
                 );
                 return updatedUser;
