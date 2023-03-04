@@ -1,9 +1,9 @@
 const express = require('express');
-const db      = require('./config/connection');
-const path    = require('path');
-const { ApolloServer }        = require('apollo-server-express');
-const { authMiddleWare }      = require('./utils/auth');
+const { ApolloServer } = require('apollo-server-express');
+const db = require('./config/connection');
+const path = require('path');
 const { typeDefs, resolvers } = require('./schemas');
+const { authMiddleWare }      = require('./utils/auth');
 
 const app  = express();
 const PORT = process.env.PORT || 3001;
