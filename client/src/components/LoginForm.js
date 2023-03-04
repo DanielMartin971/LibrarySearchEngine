@@ -31,6 +31,8 @@ const LoginForm = () => {
       const {data} = await login( { variables: { ...userFormData } } );
 
       Auth.login(data.login.token);
+      console.log('This is working...');
+      console.log(Auth.getProfile());
     } catch (err) {
       console.error(err);
       setShowAlert(true);

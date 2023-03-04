@@ -1,18 +1,19 @@
 const { User } = require('../models');
 const { signToken } = require('../utils/auth');
-const { AuthenticationError } = require('../utils/auth');
+const { AuthenticationError } = require('apollo-server-express');
 
 const resolvers = {
     Query: {
-        me: async (parent, args, data) => {
-            if(data.user) {
-                const userData = await User.findOne({ _id: data.user._id })
-                    .select('-__v -password');
+        me: async (parent, args, context) => {
+            if(context.user) {
+                const userData = await User
+                    .findOne({ _id: context.user._id })
+                    .select('-__v -password')
+                    .populate('books');
                 return userData;
             }
-
             throw new AuthenticationError('Not logged in');
-        }
+        },
     },
 
     Mutation: {
@@ -36,22 +37,26 @@ const resolvers = {
             const token = signToken(user);
             return { token, user };
         },
-        saveBook: async (parent, args, data) => {
-            if(data.user) {
-                const updatedUser = await User.findByIdAndUpdate(
-                    { _id: data.user._id },
-                    { $addToSet: { savedBooks: args.book } },
+        saveBook: async (parent, { bookData }, context) => {
+            if(context.user) {
+                const updatedUser = await User
+                .findByIdAndUpdate(
+                    { _id: context.user._id },
+                    { $addToSet: { savedBooks: bookData } },
                     { new: true }
-                );
+                )
+                .populate('books');
+
                 return updatedUser;
             }
             throw new AuthenticationError('You gotta be logged in!');
         },
-        removeBook: async (parent, args, data) => {
-            if(data.user) {
-                const updatedUser = await User.findByIdAndUpdate(
-                    { _id: data.user._id },
-                    { $pull: { savedBooks: { bookId: args.bookId } } },
+        removeBook: async (parent, { bookId }, context) => {
+            if(context.user) {
+                const updatedUser = await User
+                .findByIdAndUpdate(
+                    { _id: context.user._id },
+                    { $pull: { savedBooks: { bookId } } },
                     { new: true }
                 );
                 return updatedUser;
