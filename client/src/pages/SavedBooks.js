@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Card, Button } from 'react-bootstrap';
+import { Jumbotron, Container, Button, Card, CardColumns } from 'react-bootstrap';
 
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_ME } from '../utils/queries';
@@ -12,10 +12,6 @@ const SavedBooks = () => {
   const [removeBook] = useMutation(REMOVE_BOOK);
 
   const userData = data?.me || {};
-
-  // use this to determine if `useEffect()` hook needs to run again
-  // const userDataLength = Object.keys(userData).length;
-
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
   const handleDeleteBook = async (bookId) => {
@@ -43,11 +39,11 @@ const SavedBooks = () => {
   }
   return (
     <>
-      <div fluid className='text-light bg-dark'>
+      <Jumbotron fluid className='text-light bg-dark'>
         <Container>
           <h1>Viewing {userData.username}'s saved books!</h1>
         </Container>
-      </div>
+      </Jumbotron>
       <Container>
         <h2>
         {userData.savedBooks?.length
@@ -56,7 +52,7 @@ const SavedBooks = () => {
               }:`
             : 'You have no saved books!'}
         </h2>
-        <Row>
+        <CardColumns>
           {userData.savedBooks?.map((book) => {
             return (
               <Card key={book.bookId} border='dark'>
@@ -76,7 +72,7 @@ const SavedBooks = () => {
               </Card>
             );
           })}
-        </Row>
+        </CardColumns>
       </Container>
     </>
   );
